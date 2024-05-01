@@ -1,50 +1,45 @@
-// Initialisierung der Image Classifier-Methode mit MobileNet und einem Callback
+// sketch.js
 let classifier;
 let img;
 let thumbnail;
 let resultDiv;
+let classifyButton;
 
 function preload() {
   classifier = ml5.imageClassifier('MobileNet');
 }
 
 function setup() {
-  // Canvas erstellen
   createCanvas(400, 400);
 
   // Drag-and-Drop Bereich konfigurieren
   let dropZone = select('#drop_zone');
+  dropZone.dragOver(highlight);
+  dropZone.dragLeave(unhighlight);
   dropZone.drop(gotFile);
 
   // Ergebnisanzeige erstellen
   resultDiv = select('#result');
 
   // Button zum manuellen Starten der Klassifizierung
-  let classifyButton = select('button');
-  classifyButton.style('display', 'block');
-  classifyButton.style('margin-top', '20px');
+  classifyButton = select('#classifyButton');
+  classifyButton.mousePressed(classifyImage);
 }
 
-// Funktion, die aufgerufen wird, wenn das Bild hochgeladen wird
 function gotFile(file) {
   if (file.type === 'image') {
     // Das Bild als p5.Image-Objekt laden
-    loadImage(file.data, function (loadedImage) {
-      // Bild skalieren, um als Miniaturbild angezeigt zu werden
-      thumbnail = createImg(loadedImage, 'Thumbnail');
-      thumbnail.size(100, 100);
-      thumbnail.parent('thumbnail'); // Das Thumbnail in das entsprechende Div einfügen
+    img = createImg(file.data, 'Uploaded Image');
+    img.size(200, 200);
+    img.position(20, 200);
 
-      // Klassifizierung des Bildes aufrufen
-      img = loadedImage;
-      classifier.classify(img, gotResult);
-    });
+    // Klassifizierung des Bildes aufrufen
+    classifier.classify(img, gotResult);
   } else {
     console.log('Es wurde keine Bilddatei hochgeladen.');
   }
 }
 
-// Funktion, die aufgerufen wird, wenn der "Klassifizieren" Button geklickt wird
 function classifyImage() {
   if (img) {
     classifier.classify(img, gotResult);
@@ -53,7 +48,6 @@ function classifyImage() {
   }
 }
 
-// Funktion, die aufgerufen wird, wenn die Klassifizierungsergebnisse erhalten werden
 function gotResult(error, results) {
   if (error) {
     console.error(error);
@@ -63,15 +57,12 @@ function gotResult(error, results) {
   }
 }
 
-// Funktionen für Drag-and-Drop Interaktionen
 function highlight() {
-  select('#drop_zone').addClass('highlight');
-  select('#drop_zone').html('<p>Drop here</p>');
+  select('#drop_zone').style('background-color', '#eee');
 }
 
 function unhighlight() {
-  select('#drop_zone').removeClass('highlight');
-  select('#drop_zone').html('<p>Drag and Drop</p>');
+  select('#drop_zone').style('background-color', '');
 }
 
 // Verhindern des Standardverhaltens beim Drag-and-Drop
