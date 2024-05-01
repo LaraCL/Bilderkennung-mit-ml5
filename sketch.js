@@ -1,10 +1,7 @@
-// sketch.js
 let classifier;
 let img;
-let thumbnail;
 let resultDiv;
 let classifyButton;
-
 
 function setup() {
   createCanvas(400, 400);
@@ -30,7 +27,7 @@ function setup() {
 
 function gotFile(file) {
   if (file.type === 'image') {
-    // Das Bild als p5.Element-Objekt laden und anzeigen
+    // Das Bild als p5.Image-Objekt laden und anzeigen
     img = createImg(file.data, 'Uploaded Image', '', () => {
       img.size(200, 200);
       img.position(20, 200);
