@@ -23,22 +23,24 @@
       color: #33c3f0;
     }
 
-    #result {
+    #thumbnail {
       margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
-  <h1>Drag and Drop Image Classification</h1>
+  <h1>Drag-and-Drop Image Classification</h1>
 
   <div id="drop_zone" class="highlight">
     <p>Drag and Drop</p>
   </div>
 
+  <div id="thumbnail"></div>
+
   <div id="result"></div>
+
+  <button onclick="classifyImage()">Klassifizieren</button>
 
   <script src="sketch.js"></script>
 </body>
