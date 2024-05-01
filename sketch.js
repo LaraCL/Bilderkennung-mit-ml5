@@ -1,29 +1,62 @@
-// Initialize the Image Classifier method with MobileNet. A callback needs to be passed.
+// Initialisierung der Image Classifier-Methode mit MobileNet und dem Callback
 let classifier;
-
-// A variable to hold the image we want to classify
 let img;
 
 function preload() {
   classifier = ml5.imageClassifier('MobileNet');
-  img = loadImage('images/bird.png');
 }
 
 function setup() {
+  // Canvas erstellen
   createCanvas(400, 400);
-  classifier.classify(img, gotResult);
-  image(img, 0, 0);
+
+  // Drag-and-Drop Bereich konfigurieren
+  let dropZone = select('#drop_zone');
+  dropZone.dragOver(highlight);
+  dropZone.dragLeave(unhighlight);
+  dropZone.drop(gotFile);
+
+  // Ergebnisanzeige erstellen
+  resultDiv = createDiv('Ziehen Sie ein Bild in das Feld oben, um es zu klassifizieren.');
+
+  // Laden eines Beispielbildes
+  img = loadImage('images/bird.png', imageLoaded);
 }
 
-// A function to run when we get any errors and the results
+// Funktion, die aufgerufen wird, wenn das Bild geladen ist
+function imageLoaded() {
+  // Bild anzeigen
+  image(img, 0, 0);
+
+  // Klassifizierung des Bildes aufrufen
+  classifier.classify(img, gotResult);
+}
+
+// Funktion, die aufgerufen wird, wenn das Bild hochgeladen wird
+function gotFile(file) {
+  if (file.type === 'image') {
+    img = createImg(file.data, '').hide();
+    imageLoaded();
+  } else {
+    console.log('Es wurde keine Bilddatei hochgeladen.');
+  }
+}
+
+// Funktion, die aufgerufen wird, wenn die Klassifizierungsergebnisse erhalten werden
 function gotResult(error, results) {
-  // Display error in the console
   if (error) {
     console.error(error);
   } else {
-    // The results are in an array ordered by confidence.
-    console.log(results);
-    createDiv(`Label: ${results[0].label}`);
-    createDiv(`Confidence: ${nf(results[0].confidence, 0, 2)}`);
+    // Ergebnis anzeigen
+    resultDiv.html(`<strong>Label:</strong> ${results[0].label}<br><strong>Confidence:</strong> ${nf(results[0].confidence, 0, 2)}`);
   }
+}
+
+// Funktionen für Drag-and-Drop Interaktionen
+function highlight() {
+  select('#drop_zone').style('background-color', '#ccc');
+}
+
+function unhighlight() {
+  select('#drop_zone').style('background-color', '#fff');
 }
