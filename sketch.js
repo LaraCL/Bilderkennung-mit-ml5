@@ -1,5 +1,8 @@
 // Initialisierung der Image Classifier-Methode mit MobileNet und einem Callback
 let classifier;
+let img;
+let thumbnail;
+let resultDiv;
 
 function preload() {
   classifier = ml5.imageClassifier('MobileNet');
@@ -15,18 +18,38 @@ function setup() {
 
   // Ergebnisanzeige erstellen
   resultDiv = select('#result');
+
+  // Button zum manuellen Starten der Klassifizierung
+  let classifyButton = select('button');
+  classifyButton.style('display', 'block');
+  classifyButton.style('margin-top', '20px');
 }
 
 // Funktion, die aufgerufen wird, wenn das Bild hochgeladen wird
 function gotFile(file) {
   if (file.type === 'image') {
     // Das Bild als p5.Image-Objekt laden
-    loadImage(file.data, function (img) {
-      image(img, 0, 0, width, height);
-      classifier.classify(img, gotResult); // Klassifizierung des Bildes aufrufen
+    loadImage(file.data, function (loadedImage) {
+      // Bild skalieren, um als Miniaturbild angezeigt zu werden
+      thumbnail = createImg(loadedImage, 'Thumbnail');
+      thumbnail.size(100, 100);
+      thumbnail.parent('thumbnail'); // Das Thumbnail in das entsprechende Div einfügen
+
+      // Klassifizierung des Bildes aufrufen
+      img = loadedImage;
+      classifier.classify(img, gotResult);
     });
   } else {
     console.log('Es wurde keine Bilddatei hochgeladen.');
+  }
+}
+
+// Funktion, die aufgerufen wird, wenn der "Klassifizieren" Button geklickt wird
+function classifyImage() {
+  if (img) {
+    classifier.classify(img, gotResult);
+  } else {
+    console.log('Es wurde noch kein Bild hochgeladen.');
   }
 }
 
