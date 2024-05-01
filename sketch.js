@@ -1,6 +1,5 @@
 // Initialisierung der Image Classifier-Methode mit MobileNet und einem Callback
 let classifier;
-let img;
 
 function preload() {
   classifier = ml5.imageClassifier('MobileNet');
@@ -18,13 +17,15 @@ function setup() {
 
   // Ergebnisanzeige erstellen
   resultDiv = createDiv('Ziehen Sie ein Bild in das Feld oben, um es zu klassifizieren.');
+  resultDiv.style('font-size', '18px');
+  resultDiv.style('font-weight', 'bold');
 }
 
 // Funktion, die aufgerufen wird, wenn das Bild hochgeladen wird
 function gotFile(file) {
   if (file.type === 'image') {
-    img = createImg(file.data, '').hide();
-    image(img, 0, 0);
+    let img = createImg(file.data, '').hide();
+    image(img, 0, 0, width, height);
     classifier.classify(img, gotResult); // Klassifizierung des Bildes aufrufen
   } else {
     console.log('Es wurde keine Bilddatei hochgeladen.');
@@ -43,9 +44,11 @@ function gotResult(error, results) {
 
 // Funktionen für Drag-and-Drop Interaktionen
 function highlight() {
-  select('#drop_zone').style('background-color', '#ccc');
+  select('#drop_zone').addClass('highlight');
+  select('#drop_zone').html('<p>Drop here</p>');
 }
 
 function unhighlight() {
-  select('#drop_zone').style('background-color', '#fff');
+  select('#drop_zone').removeClass('highlight');
+  select('#drop_zone').html('<p>Drag and Drop</p>');
 }
