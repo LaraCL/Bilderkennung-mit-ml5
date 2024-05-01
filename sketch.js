@@ -1,4 +1,4 @@
-// Initialisierung der Image Classifier-Methode mit MobileNet und dem Callback
+// Initialisierung der Image Classifier-Methode mit MobileNet und einem Callback
 let classifier;
 let img;
 
@@ -18,25 +18,14 @@ function setup() {
 
   // Ergebnisanzeige erstellen
   resultDiv = createDiv('Ziehen Sie ein Bild in das Feld oben, um es zu klassifizieren.');
-
-  // Laden eines Beispielbildes
-  img = loadImage('images/bird.png', imageLoaded);
-}
-
-// Funktion, die aufgerufen wird, wenn das Bild geladen ist
-function imageLoaded() {
-  // Bild anzeigen
-  image(img, 0, 0);
-
-  // Klassifizierung des Bildes aufrufen
-  classifier.classify(img, gotResult);
 }
 
 // Funktion, die aufgerufen wird, wenn das Bild hochgeladen wird
 function gotFile(file) {
   if (file.type === 'image') {
     img = createImg(file.data, '').hide();
-    imageLoaded();
+    image(img, 0, 0);
+    classifier.classify(img, gotResult); // Klassifizierung des Bildes aufrufen
   } else {
     console.log('Es wurde keine Bilddatei hochgeladen.');
   }
