@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bildklassifizierung mit ml5.js</title>
+    <!-- Füge die ml5-Bibliothek hinzu -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ml5/0.7.0/ml5.min.js"></script>
+</head>
+<body>
+    <h1>Bildklassifizierung mit ml5.js</h1>
+    <p>Ziehe ein Bild hierher oder klicke, um ein Bild auszuwählen:</p>
+
+    <!-- Drag-and-Drop Bereich -->
+    <div id="dropArea" style="width: 300px; height: 300px; border: 2px dashed gray; text-align: center; line-height: 300px;"
+         ondragover="handleDragOver(event)"
+         ondrop="handleDrop(event)">
+        Ziehe ein Bild hierher
+    </div>
+
+    <!-- Hier wird das Bild angezeigt -->
+    <img id="inputImage" src="#" alt="Ausgewähltes Bild" style="max-width: 300px; display: none;">
+
+    <!-- Hier wird die Klassifizierung angezeigt -->
+    <div id="result"></div>
+
+    <!-- JavaScript-Code für die Bildklassifizierung -->
+    <script>
+        // Funktion, die aufgerufen wird, wenn die Maus über den Drag-and-Drop-Bereich bewegt wird
+        function handleDragOver(event) {
+            event.preventDefault(); // Verhindere Standardverhalten
+        }
+
+        // Funktion, die aufgerufen wird, wenn ein Bild per Drag-and-Drop abgelegt wird
+        function handleDrop(event) {
+            event.preventDefault(); // Verhindere Standardverhalten
+            const file = event.dataTransfer.files[0]; // Das abgelegte Bild
+
+            // Lese das abgelegte Bild als Data URL
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageUrl = event.target.result;
+                const img = document.getElementById('inputImage');
+                img.src = imageUrl;
+                img.style.display = 'block'; // Zeige das Bild an
+
+                // Starte die Bildklassifizierung mit ml5.js
+                classifyImage(img);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Funktion zur Bildklassifizierung
+        async function classifyImage(imgElement) {
+            // Lade das MobileNet-Modell
+            const classifier = await ml5.imageClassifier('MobileNet');
+
+            // Klassifiziere das Bild
+            classifier.classify(imgElement, (err, results) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                
+                // Zeige die Klassifizierungsergebnisse an
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<h2>Klassifizierungsergebnisse:</h2>';
+                results.forEach(result => {
+                    resultDiv.innerHTML += `<p>${result.label}: ${result.confidence.toFixed(4)}</p>`;
+                });
+            });
+        }
+    </script>
+</body>
+</html>
