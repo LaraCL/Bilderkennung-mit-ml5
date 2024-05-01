@@ -5,10 +5,6 @@ let thumbnail;
 let resultDiv;
 let classifyButton;
 
-function preload() {
-  classifier = ml5.imageClassifier('MobileNet');
-}
-
 function setup() {
   createCanvas(400, 400);
 
@@ -24,17 +20,23 @@ function setup() {
   // Button zum manuellen Starten der Klassifizierung
   classifyButton = select('#classifyButton');
   classifyButton.mousePressed(classifyImage);
+
+  // Image Classifier mit MobileNet initialisieren
+  classifier = ml5.imageClassifier('MobileNet', () => {
+    console.log('Image Classifier geladen.');
+  });
 }
 
 function gotFile(file) {
   if (file.type === 'image') {
-    // Das Bild als p5.Image-Objekt laden
-    img = createImg(file.data, 'Uploaded Image');
-    img.size(200, 200);
-    img.position(20, 200);
+    // Das Bild als p5.Element-Objekt laden und anzeigen
+    img = createImg(file.data, 'Uploaded Image', '', () => {
+      img.size(200, 200);
+      img.position(20, 200);
 
-    // Klassifizierung des Bildes aufrufen
-    classifier.classify(img, gotResult);
+      // Klassifizierung des Bildes aufrufen
+      classifier.classify(img.elt, gotResult);
+    });
   } else {
     console.log('Es wurde keine Bilddatei hochgeladen.');
   }
@@ -42,7 +44,7 @@ function gotFile(file) {
 
 function classifyImage() {
   if (img) {
-    classifier.classify(img, gotResult);
+    classifier.classify(img.elt, gotResult);
   } else {
     console.log('Es wurde noch kein Bild hochgeladen.');
   }
