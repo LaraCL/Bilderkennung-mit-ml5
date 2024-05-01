@@ -31,71 +31,76 @@
     
     <!-- JavaScript-Code für die Bildklassifizierung -->
     <script>
-        // Eventlistener für das DOMContentLoaded-Event
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM fully loaded and parsed');
+        // Funktion, die aufgerufen wird, wenn die Maus über den Drag-and-Drop-Bereich bewegt wird
+        function handleDragOver(event) {
+            event.preventDefault(); // Verhindere Standardverhalten
+        }
 
-            // Funktion, die aufgerufen wird, wenn die Maus über den Drag-and-Drop-Bereich bewegt wird
-            function handleDragOver(event) {
-                event.preventDefault(); // Verhindere Standardverhalten
-            }
+        // Funktion, die aufgerufen wird, wenn ein Bild per Drag-and-Drop abgelegt wird
+        function handleDrop(event) {
+            event.preventDefault(); // Verhindere Standardverhalten
 
-            // Funktion, die aufgerufen wird, wenn ein Bild per Drag-and-Drop abgelegt wird
-            function handleDrop(event) {
-                event.preventDefault(); // Verhindere Standardverhalten
-                const file = event.dataTransfer.files[0]; // Das abgelegte Bild
+            // Überprüfe, ob die abgelegten Elemente Dateien enthalten
+            if (event.dataTransfer.items) {
+                // Durchlaufe alle abgelegten Elemente
+                for (let i = 0; i < event.dataTransfer.items.length; i++) {
+                    // Überprüfe, ob das Element eine Datei ist
+                    if (event.dataTransfer.items[i].kind === 'file') {
+                        const file = event.dataTransfer.items[i].getAsFile();
 
-                // Lese das abgelegte Bild als Data URL
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const imageUrl = event.target.result;
-                    const img = document.getElementById('inputImage');
-                    img.src = imageUrl;
-                    img.style.display = 'block'; // Zeige das Bild an
+                        // Lese das abgelegte Bild als Data URL
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const imageUrl = event.target.result;
+                            const img = document.getElementById('inputImage');
+                            img.src = imageUrl;
+                            img.style.display = 'block'; // Zeige das Bild an
 
-                    // Starte die Bildklassifizierung mit ml5.js
-                    classifyImage(img);
-                };
+                            // Starte die Bildklassifizierung mit ml5.js
+                            classifyImage(img);
+                        };
 
-                reader.readAsDataURL(file);
-            }
-
-            // Funktion zur Bildklassifizierung
-            async function classifyImage(imgElement) {
-                // Lade das MobileNet-Modell
-                const classifier = await ml5.imageClassifier('MobileNet');
-
-                // Klassifiziere das Bild
-                classifier.classify(imgElement, (err, results) => {
-                    if (err) {
-                        console.error('Fehler bei der Klassifizierung:', err);
-                        return;
+                        reader.readAsDataURL(file);
                     }
-                    
-                    // Zeige die Klassifizierungsergebnisse an
-                    const resultDiv = document.getElementById('result');
-                    resultDiv.innerHTML = '<h2>Klassifizierungsergebnisse:</h2>';
-                    results.forEach(result => {
-                        resultDiv.innerHTML += `<p>${result.label}: ${result.confidence.toFixed(4)}</p>`;
-                    });
-                });
-            }
-
-            // Funktion zur Bildklassifizierung anhand eines Bild-URLs
-            async function classifyImageFromUrl() {
-                const imageUrl = document.getElementById('imageUrlInput').value;
-                const img = document.getElementById('inputImage');
-                img.src = imageUrl;
-                img.style.display = 'block'; // Zeige das Bild an
-
-                try {
-                    // Starte die Bildklassifizierung mit ml5.js
-                    await classifyImage(img);
-                } catch (error) {
-                    console.error('Fehler bei der Klassifizierung:', error);
                 }
             }
-        });
+        }
+
+        // Funktion zur Bildklassifizierung
+        async function classifyImage(imgElement) {
+            // Lade das MobileNet-Modell
+            const classifier = await ml5.imageClassifier('MobileNet');
+
+            // Klassifiziere das Bild
+            classifier.classify(imgElement, (err, results) => {
+                if (err) {
+                    console.error('Fehler bei der Klassifizierung:', err);
+                    return;
+                }
+                
+                // Zeige die Klassifizierungsergebnisse an
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<h2>Klassifizierungsergebnisse:</h2>';
+                results.forEach(result => {
+                    resultDiv.innerHTML += `<p>${result.label}: ${result.confidence.toFixed(4)}</p>`;
+                });
+            });
+        }
+
+        // Funktion zur Bildklassifizierung anhand eines Bild-URLs
+        async function classifyImageFromUrl() {
+            const imageUrl = document.getElementById('imageUrlInput').value;
+            const img = document.getElementById('inputImage');
+            img.src = imageUrl;
+            img.style.display = 'block'; // Zeige das Bild an
+
+            try {
+                // Starte die Bildklassifizierung mit ml5.js
+                await classifyImage(img);
+            } catch (error) {
+                console.error('Fehler bei der Klassifizierung:', error);
+            }
+        }
     </script>
 </body>
 </html>
