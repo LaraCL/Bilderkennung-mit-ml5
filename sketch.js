@@ -5,6 +5,7 @@ let thumbnail;
 let resultDiv;
 let classifyButton;
 
+
 function setup() {
   createCanvas(400, 400);
 
