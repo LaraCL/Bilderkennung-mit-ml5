@@ -11,22 +11,20 @@ function setup() {
 
   // Drag-and-Drop Bereich konfigurieren
   let dropZone = select('#drop_zone');
-  dropZone.dragOver(highlight);
-  dropZone.dragLeave(unhighlight);
   dropZone.drop(gotFile);
 
   // Ergebnisanzeige erstellen
-  resultDiv = createDiv('Ziehen Sie ein Bild in das Feld oben, um es zu klassifizieren.');
-  resultDiv.style('font-size', '18px');
-  resultDiv.style('font-weight', 'bold');
+  resultDiv = select('#result');
 }
 
 // Funktion, die aufgerufen wird, wenn das Bild hochgeladen wird
 function gotFile(file) {
   if (file.type === 'image') {
-    let img = createImg(file.data, '').hide();
-    image(img, 0, 0, width, height);
-    classifier.classify(img, gotResult); // Klassifizierung des Bildes aufrufen
+    // Das Bild als p5.Image-Objekt laden
+    loadImage(file.data, function (img) {
+      image(img, 0, 0, width, height);
+      classifier.classify(img, gotResult); // Klassifizierung des Bildes aufrufen
+    });
   } else {
     console.log('Es wurde keine Bilddatei hochgeladen.');
   }
@@ -52,3 +50,13 @@ function unhighlight() {
   select('#drop_zone').removeClass('highlight');
   select('#drop_zone').html('<p>Drag and Drop</p>');
 }
+
+// Verhindern des Standardverhaltens beim Drag-and-Drop
+window.ondragover = function (e) {
+  e.preventDefault();
+  return false;
+};
+window.ondrop = function (e) {
+  e.preventDefault();
+  return false;
+};
