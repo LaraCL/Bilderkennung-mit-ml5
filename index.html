@@ -9,7 +9,6 @@
 </head>
 <body>
     <h1>Bildklassifizierung mit ml5.js</h1>
-    <p>Ziehe ein Bild hierher oder klicke, um ein Bild auszuwählen:</p>
 
     <!-- Drag-and-Drop Bereich -->
     <div id="dropArea" style="width: 300px; height: 300px; border: 2px dashed gray; text-align: center; line-height: 300px;"
@@ -17,6 +16,11 @@
          ondrop="handleDrop(event)">
         Ziehe ein Bild hierher
     </div>
+
+    <!-- ODER Bild per Link -->
+    <p>ODER füge einen Bildlink ein:</p>
+    <input type="text" id="imageUrlInput" placeholder="Gib den URL-Link des Bildes ein">
+    <button onclick="classifyImageFromUrl()">Klassifizieren</button>
 
     <!-- Hier wird das Bild angezeigt -->
     <img id="inputImage" src="#" alt="Ausgewähltes Bild" style="max-width: 300px; display: none;">
@@ -70,6 +74,17 @@
                     resultDiv.innerHTML += `<p>${result.label}: ${result.confidence.toFixed(4)}</p>`;
                 });
             });
+        }
+
+        // Funktion zur Bildklassifizierung anhand eines Bild-URLs
+        async function classifyImageFromUrl() {
+            const imageUrl = document.getElementById('imageUrlInput').value;
+            const img = document.getElementById('inputImage');
+            img.src = imageUrl;
+            img.style.display = 'block'; // Zeige das Bild an
+
+            // Starte die Bildklassifizierung mit ml5.js
+            classifyImage(img);
         }
     </script>
 </body>
